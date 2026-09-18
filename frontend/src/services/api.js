@@ -1,8 +1,20 @@
 import axios from 'axios';
 
-// Create configured axios instance pointing to the backend base API URL
+// Resolve API base URL with production Render fallback and localhost dev fallback
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  // If running in production (e.g. deployed on Vercel), point to Render backend
+  if (import.meta.env.PROD || (typeof window !== 'undefined' && !window.location.hostname.includes('localhost'))) {
+    return 'https://waste-food-management-wcm2.onrender.com/api';
+  }
+  return 'http://localhost:5000/api';
+};
+
+// Create configured axios instance pointing to backend
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
